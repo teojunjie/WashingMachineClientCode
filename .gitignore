@@ -1,0 +1,7 @@
+android/
+ios/
+node_modules
+.babelrc
+.buckconfig
+.flowconfig
+.watchmanconfig
