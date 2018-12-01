@@ -9,6 +9,7 @@
 import React, {Component} from 'react';
 import {Platform, StyleSheet, Text, View} from 'react-native';
 import io from 'socket.io-client/dist/socket.io';
+import { LOCALHOSTEMULATORURL, SERVERURL } from 'react-native-dotenv'
 
 const instructions = Platform.select({
   ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
@@ -21,18 +22,26 @@ type Props = {};
 export default class App extends Component<Props> {
   constructor(){
     super();
-    this.socket = io('http://10.0.2.2:3000');
+    this.socket = io(SERVERURL);
     this.socket.on('machineStatus',(response)=>{
       console.log('Data received from server ');
-      console.log(response);
+      this.updateText();
     })
+    this.state = {
+      washingMachineStatus: 'Machine status : OFF'
+    }
 
+  }
+
+  updateText = () => {
+    this.setState({washingMachineStatus: 'Machine status : ON'})
   }
   render() {
 
     return (
       <View style={styles.container}>
-        <Text style={styles.welcome}>GH Washing Machine Client</Text>
+        <Text style={styles.welcome}>GH Washing Machine 1</Text>
+        <Text> {this.state.washingMachineStatus}</Text>
       </View>
     );
   }
@@ -41,13 +50,13 @@ export default class App extends Component<Props> {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'flex-start',
+    justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#F5FCFF',
   },
   welcome: {
     fontSize: 20,
-    textAlign: 'left',
+    textAlign: 'center',
     margin : 10
   },
   instructions: {
