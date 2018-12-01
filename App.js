@@ -21,40 +21,18 @@ type Props = {};
 export default class App extends Component<Props> {
   constructor(){
     super();
-    this.socket = io('https://192.168.43.152:3000');
-
+    this.socket = io('http://10.0.2.2:3000');
+    this.socket.on('machineStatus',(response)=>{
+      console.log('Data received from server ');
+      console.log(response);
+    })
 
   }
   render() {
 
-  console.log('Sending get request');
-  fetch('https://192.168.1.1:3000/')  
-    .then(function(response) {
-      console.log('Received response');
-      return response.json()
-    }).catch((error)=> {
-      console.log(error);
-    })
-
-    // fetch('http://192.168.43.152:3000/machineStatus', {
-    //   method: 'POST',
-    //   headers: {
-    //     Accept: 'application/json',
-    //     'Content-Type': 'application/json',
-    //   },
-    //   body: JSON.stringify({
-    //     machineName: 'yourValue',
-    //     machineStatus: 'yourOtherValue',
-    //   }),
-    // }).then(function(response) {
-    //   console.log('Waiting for fetch response');
-    //   return response.json();
-
-    // });
-    console.log('Test log')
     return (
       <View style={styles.container}>
-        <Text style={styles.welcome}>GH Washing Machine</Text>
+        <Text style={styles.welcome}>GH Washing Machine Client</Text>
       </View>
     );
   }
