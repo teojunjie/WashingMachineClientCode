@@ -11,15 +11,8 @@ import {Platform, StyleSheet, Text, View, TouchableHighlight} from 'react-native
 import io from 'socket.io-client/dist/socket.io';
 import { LOCALHOSTEMULATORURL, SERVERURL } from 'react-native-dotenv'
 
-const instructions = Platform.select({
-  ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
-  android:
-    'Double tap R on your keyboard to reload,\n' +
-    'Shake or press menu button for dev menu',
-});
 
-type Props = {};
-export default class App extends Component<Props> {
+export default class App extends Component {
   constructor(){
     super();
     this.socket = io(SERVERURL);
@@ -31,7 +24,6 @@ export default class App extends Component<Props> {
       washingMachineStatus: 'OFF',
       machineBackgroundColor: 'red'
     }
-
   }
 
   updateMachineUI = () => {
@@ -48,7 +40,6 @@ export default class App extends Component<Props> {
 
 
   render() {
-
     return (
       <View style={styles.container}>
           <View style={[styles.machine, {backgroundColor: this.state.machineBackgroundColor}]}>
