@@ -7,7 +7,7 @@
  */
 
 import React, {Component} from 'react';
-import {Platform, StyleSheet, Text, View} from 'react-native';
+import {Platform, StyleSheet, Text, View, TouchableHighlight} from 'react-native';
 import io from 'socket.io-client/dist/socket.io';
 import { LOCALHOSTEMULATORURL, SERVERURL } from 'react-native-dotenv'
 
@@ -25,23 +25,38 @@ export default class App extends Component<Props> {
     this.socket = io(SERVERURL);
     this.socket.on('machineStatus',(response)=>{
       console.log('Data received from server ');
-      this.updateText();
+      this.updateMachineUI();
     })
     this.state = {
-      washingMachineStatus: 'Machine status : OFF'
+      washingMachineStatus: 'OFF',
+      machineBackgroundColor: 'red'
     }
 
   }
 
-  updateText = () => {
-    this.setState({washingMachineStatus: 'Machine status : ON'})
+  updateMachineUI = () => {
+    console.log('Updating washing machine ui');
+    this.setState({washingMachineStatus: 'ON',
+                   machineBackgroundColor : 'green'})
   }
+
+
+  onClick() {
+    console.log('Clicked');
+    this.updateMachineUI();
+  }
+
+
   render() {
 
     return (
       <View style={styles.container}>
-        <Text style={styles.welcome}>GH Washing Machine 1</Text>
-        <Text> {this.state.washingMachineStatus}</Text>
+        <TouchableHighlight onPress={this.onClick.bind(this)}>
+          <View style={[styles.machine, {backgroundColor: this.state.machineBackgroundColor}]}>
+              <Text style={styles.name}>Washing Machine 1</Text>
+              <Text style={styles.status}> {this.state.washingMachineStatus}</Text>        
+          </View>
+         </TouchableHighlight> 
       </View>
     );
   }
@@ -52,16 +67,31 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#F5FCFF',
+    backgroundColor: '#cecece',
   },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin : 10
+  machine : {
+    height : 250,
+    width : 250,
+    justifyContent: 'center',
+    alignItems :'center',
+    borderRadius: 10,
+    padding : 10,
+    margin : 20,
+    backgroundColor : 'red'
   },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
+  name: {
+    flex: 1,
+    fontSize: 25,
+    color : 'black',
+    justifyContent: 'center',
+    textAlign:'center',
+    alignItems :'center',
+    paddingTop : 10
   },
+  status: {
+    flex: 5,
+    textAlignVertical:'center',
+    textAlign:'center',
+    fontSize : 30
+  }
 });
