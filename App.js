@@ -51,12 +51,10 @@ export default class App extends Component<Props> {
 
     return (
       <View style={styles.container}>
-        <TouchableHighlight onPress={this.onClick.bind(this)}>
           <View style={[styles.machine, {backgroundColor: this.state.machineBackgroundColor}]}>
               <Text style={styles.name}>Washing Machine 1</Text>
               <Text style={styles.status}> {this.state.washingMachineStatus}</Text>        
           </View>
-         </TouchableHighlight> 
       </View>
     );
   }
