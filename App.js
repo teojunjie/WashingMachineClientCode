@@ -10,10 +10,11 @@ import React, {Component} from 'react';
 import {Platform, StyleSheet, Text, View, TouchableHighlight} from 'react-native';
 import io from 'socket.io-client/dist/socket.io';
 import { LOCALHOSTEMULATORURL, SERVERURL } from 'react-native-dotenv'
+import { createMaterialTopTabNavigator,createBottomTabNavigator, createAppContainer} from 'react-navigation'
 
 
-export default class App extends Component {
-  constructor(){
+class BlocksScreen extends Component {
+    constructor(){
     super();
     this.socket = io(SERVERURL);
     this.socket.on('machineStatus',(response)=>{
@@ -37,8 +38,6 @@ export default class App extends Component {
     console.log('Clicked');
     this.updateMachineUI();
   }
-
-
   render() {
     return (
       <View style={styles.container}>
@@ -50,6 +49,30 @@ export default class App extends Component {
     );
   }
 }
+
+
+class SettingsScreen extends Component {
+  render() {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text>Settings!</Text>
+      </View>
+      )
+  }
+}
+
+const tabNavigator = createBottomTabNavigator({
+  Blocks: {screen : BlocksScreen},
+  Settings: {screen : SettingsScreen} 
+}, {
+  initialRouteName: 'Blocks',
+  activeColor: '#f0edf6',
+  inactiveColor : '#3e2465',
+  barStyle : {
+    backgroundColor : '#694fad'
+  }
+})
+
 
 const styles = StyleSheet.create({
   container: {
@@ -84,3 +107,5 @@ const styles = StyleSheet.create({
     fontSize : 30
   }
 });
+
+export default createAppContainer(tabNavigator);
