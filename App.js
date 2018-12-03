@@ -19,137 +19,96 @@ class BlocksScreen extends Component {
     this.socket = io(LOCALHOSTEMULATORURL);
     this.socket.on('machineStatus',(response)=>{
       console.log('Data received from server ');
-      machineInfo = response;
-      console.log(machineInfo);
-      this.updateMachineUI(machineInfo);
+      this.updateMachineUI(response);
     })
     initialMachinesArr = [
       {
         id: 1,
         machineBackgroundColor: "red",
-        machineStatus: "OFF",
+        machineStatus: "Unavailable",
         text : "Machine 1"
       },
       
       {
         id: 2,
         machineBackgroundColor: "red",
-        machineStatus: "OFF",
+        machineStatus: "Unavailable",
         text : "Machine 2"
       },
       
       {
         id: 3,
         machineBackgroundColor: "red",
-        machineStatus: "OFF",
+        machineStatus: "Unavailable",
         text : "Machine 3"
       },
       
       {
         id: 4,
         machineBackgroundColor: "red",
-        machineStatus: "OFF",
+        machineStatus: "Unavailable",
         text : "Machine 4"
       },
 
       {
         id: 5,
         machineBackgroundColor: "red",
-        machineStatus: "OFF",
+        machineStatus: "Unavailable",
         text : "Machine 5"
       }
     ];
 
-    var machinesListArr = initialMachinesArr.map(machineInfo => (
-      <TouchableHighlight key={machineInfo.id} style= {styles.machinesContainer} onPress= {this.updateMachineUI.bind(this, machineInfo)}>
-        <WashingMachine number = {machineInfo.id}/>
-      </TouchableHighlight>  
-    ));
-
-
     this.state = {
       defaultStatus : {
-        machineStatus: 'OFF',
+        machineStatus: 'Unavailable',
         machineBackgroundColor: 'red'        
       },
-      machines : initialMachinesArr,
-      machinesListArr : machinesListArr
+      machines : initialMachinesArr
     }
-
 
   }
 
 
   updateMachineUI(machineInfo) {
-    console.log('Clicked');
-
-    console.log(machineInfo);
     var machineNumber = machineInfo.id;
     var machineStatus = machineInfo.machineStatus;
     var machineBackgroundColor = machineInfo.machineBackgroundColor;
 
     var updatedMachinesInfo = this.state.machines;
-    var machinesListArr = this.state.machinesListArr;
-    console.log('Before');
-    console.log(updatedMachinesInfo); 
     updatedMachinesInfo[machineNumber-1].machineStatus = machineStatus;
     updatedMachinesInfo[machineNumber-1].machineBackgroundColor = machineBackgroundColor;
 
-    var newMachineStatus = updatedMachinesInfo[machineNumber-1].machineStatus;
-    var newMachineBackgroundColor = updatedMachinesInfo[machineNumber-1].machineBackgroundColor;
-
     this.setState({machines : updatedMachinesInfo});
-    console.log('After');
-    console.log(this.state);
-
-    updateMachine(machineNumber, newMachineStatus, newMachineBackgroundColor, machinesListArr);
   }
 
   render() {
     console.log('Rendering...');
-    console.log(this.state);
+
+    var machinesListArr = initialMachinesArr.map(machineInfo => (
+        <WashingMachine key={machineInfo.id} number = {machineInfo.id} machineBackgroundColor = {machineInfo.machineBackgroundColor} machineStatus = {machineInfo.machineStatus} />
+    ));
 
     return (
       <ScrollView style= {styles.scrollContainer}>
-        {this.state.machinesListArr}
+        <View style = {styles.machinesContainer}>
+            {machinesListArr}
+        </View>    
       </ScrollView>
     )
   }
 }
 
-function updateMachine(machineNumber, machineStatus, machineBackgroundColor, machinesListArr) {
-
-    console.log('Updating washing machine ui for ' + machineNumber );
-    console.log(machinesListArr[machineNumber-1]);
-    machinesListArr[machineNumber-1].props.updateMachineState(machineStatus, machineBackgroundColor);
-    console.log('View status');
-    console.log(this.state);
-
-}
-
-function updateMachineState(machineStatus, machineBackgroundColor) {
-    this.setState({machineStatus: machineStatus,
-                   machineBackgroundColor : machineBackgroundColor})
-}
-
 
 class WashingMachine extends Component {
-  constructor() {
-    super()
-    this.state = {
-      machineStatus: 'OFF',
-      machineBackgroundColor: 'red'
-    }
-    updateMachineState = updateMachineState.bind(this);    
-  }
-
   render() {
-    var washingMachineName = "Washing Machine " + this.props.number;
-    return (
+    var name = "Washing Machine " + this.props.number;
+    var machineBackgroundColor = this.props.machineBackgroundColor;
+    var machineStatus = this.props.machineStatus;
 
-        <View style={[styles.machine, {backgroundColor: this.state.machineBackgroundColor}]}>
-            <Text style={styles.name}>{washingMachineName}</Text>
-            <Text style={styles.status}> {this.state.machineStatus}</Text>        
+    return (
+        <View style={[styles.machine, {backgroundColor: machineBackgroundColor}]}>
+            <Text style={styles.name}>{name}</Text>
+            <Text style={styles.status}> {machineStatus}</Text>        
         </View>
     )
   }
@@ -166,25 +125,43 @@ class SettingsScreen extends Component {
 }
 
 const tabNavigator = createBottomTabNavigator({
-  Blocks: {screen : BlocksScreen},
+  GH: {screen : BlocksScreen},
+  F: {screen : BlocksScreen},
+  E: {screen : BlocksScreen},
+  CD: {screen : BlocksScreen},
+  AB: {screen : BlocksScreen},
   Settings: {screen : SettingsScreen} 
 }, {
     defaultNavigationOptions: ({ navigation }) => ({
     tabBarIcon: ({ focused, horizontal, tintColor }) => {
       const { routeName } = navigation.state;
       let iconName;
-      if (routeName === 'Blocks') {
-        iconName = 'ios-navigate'
-      } else if (routeName === 'Settings') {
-        iconName = 'ios-options';
+      switch (routeName) {
+        case 'AB' :
+            iconName = 'ios-pizza'
+            break;
+        case 'CD' :
+            iconName = 'ios-nuclear'
+            break;
+        case 'E' :
+            iconName = 'ios-water'
+            break;
+        case 'F' :
+            iconName = 'ios-volume-off'
+            break;
+        case 'GH' :
+            iconName = 'ios-trophy'
+            break;
+        case 'Settings' :
+            iconName = 'ios-settings'
+            break;                  
       }
-
       // You can return any component that you like here! We usually use an
       // icon component from react-native-vector-icons
       return <Ionicons name={iconName} size={horizontal ? 20 : 25} color={tintColor} />;
     },
   }),
-  initialRouteName: 'Blocks',
+  initialRouteName: 'GH',
   activeColor: '#f0edf6',
   inactiveColor : '#3e2465',
   barStyle : {
@@ -195,24 +172,20 @@ const tabNavigator = createBottomTabNavigator({
 
 const styles = StyleSheet.create({
   scrollContainer: {
-    flex : 1
+    flex : 1,
+
   },
   machinesContainer : {
     flex : 1,
     flexDirection : 'row',
     flexWrap:'wrap',
     padding : 2,
-    justifyContent : 'space-around',
-
-  },
-  container: {
-    flex: 1,
-    backgroundColor: 'yellow',
-    margin : 5
+    margin : 5,
+    justifyContent : 'space-evenly',
   },
   machine : {
     height : 200,
-    width : Dimensions.get('window').width/2 -12,
+    width : Dimensions.get('window').width/2 -18,
     borderRadius: 10,
     padding : 10,
     margin : 5,
