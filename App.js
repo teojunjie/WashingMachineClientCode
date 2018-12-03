@@ -16,16 +16,12 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 class BlocksScreen extends Component {
     constructor(){
     super();
-    this.socket = io(SERVERURL);
+    this.socket = io(LOCALHOSTEMULATORURL);
     this.socket.on('machineStatus',(response)=>{
       console.log('Data received from server ');
-      sampleMachineInfo = {
-        id: 1,
-        machineBackgroundColor: "green",
-        machineStatus: "ON",
-        text : "Machine 1"
-      }
-      this.updateMachineUI(sampleMachineInfo);
+      machineInfo = response;
+      console.log(machineInfo);
+      this.updateMachineUI(machineInfo);
     })
     initialMachinesArr = [
       {
@@ -64,13 +60,22 @@ class BlocksScreen extends Component {
       }
     ];
 
+    var machinesListArr = initialMachinesArr.map(machineInfo => (
+      <TouchableHighlight key={machineInfo.id} style= {styles.machinesContainer} onPress= {this.updateMachineUI.bind(this, machineInfo)}>
+        <WashingMachine number = {machineInfo.id}/>
+      </TouchableHighlight>  
+    ));
+
+
     this.state = {
       defaultStatus : {
         machineStatus: 'OFF',
         machineBackgroundColor: 'red'        
       },
-      machines : initialMachinesArr
+      machines : initialMachinesArr,
+      machinesListArr : machinesListArr
     }
+
 
   }
 
@@ -84,10 +89,11 @@ class BlocksScreen extends Component {
     var machineBackgroundColor = machineInfo.machineBackgroundColor;
 
     var updatedMachinesInfo = this.state.machines;
+    var machinesListArr = this.state.machinesListArr;
     console.log('Before');
     console.log(updatedMachinesInfo); 
-    updatedMachinesInfo[machineNumber-1].machineStatus = 'ON';
-    updatedMachinesInfo[machineNumber-1].machineBackgroundColor = 'green';
+    updatedMachinesInfo[machineNumber-1].machineStatus = machineStatus;
+    updatedMachinesInfo[machineNumber-1].machineBackgroundColor = machineBackgroundColor;
 
     var newMachineStatus = updatedMachinesInfo[machineNumber-1].machineStatus;
     var newMachineBackgroundColor = updatedMachinesInfo[machineNumber-1].machineBackgroundColor;
@@ -96,39 +102,34 @@ class BlocksScreen extends Component {
     console.log('After');
     console.log(this.state);
 
-    updateMachineState(machineNumber, newMachineStatus, newMachineBackgroundColor);
+    updateMachine(machineNumber, newMachineStatus, newMachineBackgroundColor, machinesListArr);
   }
 
   render() {
+    console.log('Rendering...');
     console.log(this.state);
-    machinesListArr = initialMachinesArr.map(machineInfo => (
-      <TouchableHighlight key={machineInfo.id} onPress= {this.updateMachineUI.bind(this, machineInfo)}>
-        <WashingMachine number = {machineInfo.id}/>
-      </TouchableHighlight>  
-    ));
 
     return (
       <ScrollView style= {styles.scrollContainer}>
-        {machinesListArr}
+        {this.state.machinesListArr}
       </ScrollView>
     )
   }
 }
 
-function updateMachineState(machineNumber, machineStatus, machineBackgroundColor) {
-  console.log(this.props);
-  if(this.props.number == machineNumber) {
-      console.log('Updating washing machine ui for ' + machineNumber );
-      this.setState({machineStatus: machineStatus,
-                 machineBackgroundColor : machineBackgroundColor})
+function updateMachine(machineNumber, machineStatus, machineBackgroundColor, machinesListArr) {
 
-      console.log('View status');
-      console.log(this.state);
-  } else {
-    console.log('Wrong machine number');
-  }
+    console.log('Updating washing machine ui for ' + machineNumber );
+    console.log(machinesListArr[machineNumber-1]);
+    machinesListArr[machineNumber-1].props.updateMachineState(machineStatus, machineBackgroundColor);
+    console.log('View status');
+    console.log(this.state);
 
+}
 
+function updateMachineState(machineStatus, machineBackgroundColor) {
+    this.setState({machineStatus: machineStatus,
+                   machineBackgroundColor : machineBackgroundColor})
 }
 
 
