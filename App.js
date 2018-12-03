@@ -19,77 +19,90 @@ class BlocksScreen extends Component {
     this.socket = io(SERVERURL);
     this.socket.on('machineStatus',(response)=>{
       console.log('Data received from server ');
-      this.updateMachineUI();
-      this.updateSpecficMachineUI(1);
+      sampleMachineInfo = {
+        id: 1,
+        machineBackgroundColor: "green",
+        machineStatus: "ON",
+        text : "Machine 1"
+      }
+      this.updateMachineUI(sampleMachineInfo);
     })
     initialMachinesArr = [
       {
         id: 1,
         machineBackgroundColor: "red",
-        machineBackgroundColor: "OFF",
+        machineStatus: "OFF",
         text : "Machine 1"
       },
       
       {
         id: 2,
         machineBackgroundColor: "red",
-        machineBackgroundColor: "OFF",
+        machineStatus: "OFF",
         text : "Machine 2"
       },
       
       {
         id: 3,
         machineBackgroundColor: "red",
-        machineBackgroundColor: "OFF",
+        machineStatus: "OFF",
         text : "Machine 3"
       },
       
       {
         id: 4,
         machineBackgroundColor: "red",
-        machineBackgroundColor: "OFF",
+        machineStatus: "OFF",
         text : "Machine 4"
       },
 
       {
         id: 5,
         machineBackgroundColor: "red",
-        machineBackgroundColor: "OFF",
+        machineStatus: "OFF",
         text : "Machine 5"
       }
     ];
 
     this.state = {
       defaultStatus : {
-        washingMachineStatus: 'OFF',
+        machineStatus: 'OFF',
         machineBackgroundColor: 'red'        
       },
       machines : initialMachinesArr
     }
 
-    this.onClick = this.onClick.bind(this);
-  }
-
-  updateMachineUI = () => {
-    console.log('Updating washing machine ui');
-    this.setState({washingMachineStatus: 'ON',
-                   machineBackgroundColor : 'green'})
-  }
-
-  updateSpecficMachineUI(machineNumber) {
-    console.log('Updating machine ' + machineNumber + ' ui');
-    updateMachineState(3, 'ON');
   }
 
 
-  onClick(machineInfo) {
+  updateMachineUI(machineInfo) {
     console.log('Clicked');
+
     console.log(machineInfo);
+    var machineNumber = machineInfo.id;
+    var machineStatus = machineInfo.machineStatus;
+    var machineBackgroundColor = machineInfo.machineBackgroundColor;
+
+    var updatedMachinesInfo = this.state.machines;
+    console.log('Before');
+    console.log(updatedMachinesInfo); 
+    updatedMachinesInfo[machineNumber-1].machineStatus = 'ON';
+    updatedMachinesInfo[machineNumber-1].machineBackgroundColor = 'green';
+
+    var newMachineStatus = updatedMachinesInfo[machineNumber-1].machineStatus;
+    var newMachineBackgroundColor = updatedMachinesInfo[machineNumber-1].machineBackgroundColor;
+
+    this.setState({machines : updatedMachinesInfo});
+    console.log('After');
+    console.log(this.state);
+
+    updateMachineState(machineNumber, newMachineStatus, newMachineBackgroundColor);
   }
 
   render() {
+    console.log(this.state);
     machinesListArr = initialMachinesArr.map(machineInfo => (
-      <TouchableHighlight key={machineInfo.id} onPress= {this.onClick(machineInfo)}>
+      <TouchableHighlight key={machineInfo.id} onPress= {this.updateMachineUI.bind(this, machineInfo)}>
         <WashingMachine number = {machineInfo.id}/>
       </TouchableHighlight>  
     ));
@@ -102,12 +115,15 @@ class BlocksScreen extends Component {
   }
 }
 
-function updateMachineState(machineNumber, machineStatus) {
+function updateMachineState(machineNumber, machineStatus, machineBackgroundColor) {
   console.log(this.props);
   if(this.props.number == machineNumber) {
       console.log('Updating washing machine ui for ' + machineNumber );
-      this.setState({washingMachineStatus: 'ON',
-                 machineBackgroundColor : 'green'})
+      this.setState({machineStatus: machineStatus,
+                 machineBackgroundColor : machineBackgroundColor})
+
+      console.log('View status');
+      console.log(this.state);
   } else {
     console.log('Wrong machine number');
   }
@@ -120,7 +136,7 @@ class WashingMachine extends Component {
   constructor() {
     super()
     this.state = {
-      washingMachineStatus: 'OFF',
+      machineStatus: 'OFF',
       machineBackgroundColor: 'red'
     }
     updateMachineState = updateMachineState.bind(this);    
@@ -132,7 +148,7 @@ class WashingMachine extends Component {
 
         <View style={[styles.machine, {backgroundColor: this.state.machineBackgroundColor}]}>
             <Text style={styles.name}>{washingMachineName}</Text>
-            <Text style={styles.status}> {this.state.washingMachineStatus}</Text>        
+            <Text style={styles.status}> {this.state.machineStatus}</Text>        
         </View>
     )
   }
