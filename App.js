@@ -18,40 +18,41 @@ class BlocksScreen extends Component {
     super();
     this.socket = io(LOCALHOSTEMULATORURL);
     this.socket.on('machineStatus',(response)=>{
-      console.log('Data received from server ');
+       console.log('Data received from server ');
       this.updateMachineUI(response);
     })
+
     initialMachinesArr = [
       {
-        id: 1,
+        machineId	: 1,
         machineBackgroundColor: "red",
         machineStatus: "Unavailable",
         text : "Machine 1"
       },
       
       {
-        id: 2,
+        machineId	: 2,
         machineBackgroundColor: "red",
         machineStatus: "Unavailable",
         text : "Machine 2"
       },
       
       {
-        id: 3,
+        machineId	: 3,
         machineBackgroundColor: "red",
         machineStatus: "Unavailable",
         text : "Machine 3"
       },
       
       {
-        id: 4,
+        machineId	: 4,
         machineBackgroundColor: "red",
         machineStatus: "Unavailable",
         text : "Machine 4"
       },
 
       {
-        id: 5,
+        machineId	: 5,
         machineBackgroundColor: "red",
         machineStatus: "Unavailable",
         text : "Machine 5"
@@ -65,12 +66,12 @@ class BlocksScreen extends Component {
       },
       machines : initialMachinesArr
     }
-
   }
 
 
+
   updateMachineUI(machineInfo) {
-    var machineNumber = machineInfo.id;
+    var machineNumber = machineInfo.machineId;
     var machineStatus = machineInfo.machineStatus;
     var machineBackgroundColor = machineInfo.machineBackgroundColor;
 
@@ -84,8 +85,29 @@ class BlocksScreen extends Component {
   render() {
     console.log('Rendering...');
 
+    fetch(LOCALHOSTEMULATORURL +'/getBlockWashingMachines', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        block : 'GH'
+      })
+    }).then(response => {
+      console.log('Successfully received response');
+      var responseBody = response._bodyInit;
+      console.log(responseBody);
+      console.log(Object.keys(responseBody).length);
+
+    }).catch(error => {
+      console.log('Received error');
+      console.log(error);
+    });
+
+    console.log('Logging individual machine info from database through mapping');
     var machinesListArr = initialMachinesArr.map(machineInfo => (
-        <WashingMachine key={machineInfo.id} number = {machineInfo.id} machineBackgroundColor = {machineInfo.machineBackgroundColor} machineStatus = {machineInfo.machineStatus} />
+        <WashingMachine key={machineInfo.machineId} number = {machineInfo.machineId} machineBackgroundColor = {machineInfo.machineBackgroundColor} machineStatus = {machineInfo.machineStatus} />
     ));
 
     return (
@@ -104,6 +126,9 @@ class WashingMachine extends Component {
     var name = "Washing Machine " + this.props.number;
     var machineBackgroundColor = this.props.machineBackgroundColor;
     var machineStatus = this.props.machineStatus;
+    console.log(name);
+    console.log(machineBackgroundColor);
+    console.log(machineStatus);
 
     return (
         <View style={[styles.machine, {backgroundColor: machineBackgroundColor}]}>
